@@ -57,10 +57,14 @@ public class PdfService {
         Table infoTable = new Table(infoColumnWidths);
         infoTable.setMarginBottom(20);
         
-        addTableCell(infoTable, "菜系", recipe.getCuisine(), font);
-        addTableCell(infoTable, "难度", recipe.getDifficulty(), font);
-        addTableCell(infoTable, "烹饪时间", recipe.getCookingTime() + "分钟", font);
-        addTableCell(infoTable, "食材数量", String.valueOf(recipe.getIngredients() != null ? recipe.getIngredients().size() : 0), font);
+        addTableHeaderCell(infoTable, "菜系", font);
+        addTableCell(infoTable, recipe.getCuisine(), font);
+        addTableHeaderCell(infoTable, "难度", font);
+        addTableCell(infoTable, recipe.getDifficulty(), font);
+        addTableHeaderCell(infoTable, "烹饪时间", font);
+        addTableCell(infoTable, recipe.getCookingTime() + "分钟", font);
+        addTableHeaderCell(infoTable, "食材数量", font);
+        addTableCell(infoTable, String.valueOf(recipe.getIngredients() != null ? recipe.getIngredients().size() : 0), font);
         
         document.add(infoTable);
 
