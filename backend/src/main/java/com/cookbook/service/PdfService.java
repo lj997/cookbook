@@ -10,10 +10,9 @@ import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.*;
-import com.itextpdf.layout.property.HorizontalAlignment;
-import com.itextpdf.layout.property.TextAlignment;
-import com.itextpdf.layout.property.UnitValue;
+import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -42,7 +41,6 @@ public class PdfService {
                 .setFont(font)
                 .setFontSize(24)
                 .setBold()
-                .setTextAlignment(TextAlignment.CENTER)
                 .setMarginBottom(20);
         document.add(title);
 
@@ -50,13 +48,13 @@ public class PdfService {
             Paragraph desc = new Paragraph(recipe.getDescription())
                     .setFont(font)
                     .setFontSize(12)
-                    .setTextAlignment(TextAlignment.CENTER)
                     .setFontColor(new DeviceRgb(100, 100, 100))
                     .setMarginBottom(20);
             document.add(desc);
         }
 
-        Table infoTable = new Table(UnitValue.createPercentArray(4)).useAllAvailableWidth();
+        float[] infoColumnWidths = {1, 1, 1, 1};
+        Table infoTable = new Table(infoColumnWidths);
         infoTable.setMarginBottom(20);
         
         addTableCell(infoTable, "菜系", recipe.getCuisine(), font);
@@ -75,7 +73,8 @@ public class PdfService {
                     .setMarginTop(10);
             document.add(ingredientsTitle);
 
-            Table ingredientsTable = new Table(UnitValue.createPercentArray(2)).useAllAvailableWidth();
+            float[] ingColumnWidths = {1, 1};
+            Table ingredientsTable = new Table(ingColumnWidths);
             ingredientsTable.setMarginBottom(20);
             
             addTableHeaderCell(ingredientsTable, "食材名称", font);
@@ -121,15 +120,13 @@ public class PdfService {
 
     private void addTableCell(Table table, String text, PdfFont font) {
         Cell cell = new Cell()
-                .add(new Paragraph(text).setFont(font).setFontSize(11))
-                .setTextAlignment(TextAlignment.CENTER);
+                .add(new Paragraph(text).setFont(font).setFontSize(11));
         table.addCell(cell);
     }
 
     private void addTableHeaderCell(Table table, String text, PdfFont font) {
         Cell cell = new Cell()
                 .add(new Paragraph(text).setFont(font).setFontSize(11).setBold())
-                .setTextAlignment(TextAlignment.CENTER)
                 .setBackgroundColor(new DeviceRgb(240, 240, 240));
         table.addCell(cell);
     }
