@@ -341,7 +341,7 @@ const generateRecipeByAI = async () => {
     aiGenerating.value = true
     try {
       const result = await aiRecipeApi.generate(form.name.trim())
-      const generatedRecipe = result.data.data
+      const generatedRecipe = result.data
 
       if (generatedRecipe.cuisine && cuisineOptions.includes(generatedRecipe.cuisine)) {
         form.cuisine = generatedRecipe.cuisine

@@ -284,8 +284,8 @@ const loadConfigs = async () => {
       aiConfigApi.getAll()
     ])
     
-    presets.value = presetsResult.data.data || []
-    const allConfigs = allResult.data.data || []
+    presets.value = presetsResult.data || []
+    const allConfigs = allResult.data || []
     customConfigs.value = allConfigs.filter(c => !c.isPreset)
   } catch (error) {
     console.error('加载配置失败:', error)
@@ -300,13 +300,13 @@ const duplicatePreset = async (preset) => {
     const result = await aiConfigApi.duplicatePreset(preset.id)
     alert('配置已复制，请填写您的 API Key')
     
-    form.name = result.data.data.name
-    form.baseUrl = result.data.data.baseUrl
-    form.model = result.data.data.model
-    form.description = result.data.data.description
+    form.name = result.data.name
+    form.baseUrl = result.data.baseUrl
+    form.model = result.data.model
+    form.description = result.data.description
     form.apiKey = ''
     form.isActive = false
-    editingId.value = result.data.data.id
+    editingId.value = result.data.id
     
     activeTab.value = 'edit'
   } catch (error) {
@@ -359,7 +359,7 @@ const testConfig = async (config) => {
   testingConnection.value = true
   try {
     const result = await aiRecipeApi.testConnection(config)
-    if (result.data.data) {
+    if (result.data) {
       alert('✅ 连接测试成功！')
     } else {
       alert('❌ 连接测试失败')
@@ -386,7 +386,7 @@ const testCurrentConfig = async () => {
   testingConnection.value = true
   try {
     const result = await aiRecipeApi.testConnection(testConfigData)
-    if (result.data.data) {
+    if (result.data) {
       alert('✅ 连接测试成功！')
     } else {
       alert('❌ 连接测试失败')
