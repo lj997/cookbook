@@ -152,3 +152,51 @@ export const exportApi = {
     })
   }
 }
+
+export const aiConfigApi = {
+  getAll() {
+    return axios.get('/ai-configs')
+  },
+
+  getActive() {
+    return axios.get('/ai-configs/active')
+  },
+
+  getPresets() {
+    return axios.get('/ai-configs/presets')
+  },
+
+  getById(id) {
+    return axios.get(`/ai-configs/${id}`)
+  },
+
+  create(data) {
+    return axios.post('/ai-configs', data)
+  },
+
+  update(id, data) {
+    return axios.put(`/ai-configs/${id}`, data)
+  },
+
+  delete(id) {
+    return axios.delete(`/ai-configs/${id}`)
+  },
+
+  activate(id) {
+    return axios.post(`/ai-configs/${id}/activate`)
+  },
+
+  duplicatePreset(id) {
+    return axios.post(`/ai-configs/presets/${id}/duplicate`)
+  }
+}
+
+export const aiRecipeApi = {
+  generate(recipeName) {
+    return axios.post('/ai-recipe/generate', { recipeName })
+  },
+
+  testConnection(config) {
+    return axios.post('/ai-recipe/test-connection', config)
+  }
+}

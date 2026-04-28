@@ -16,13 +16,27 @@
 
           <div class="form-group">
             <label class="form-label">菜谱名称 *</label>
-            <input
-              v-model="form.name"
-              type="text"
-              class="form-control"
-              placeholder="请输入菜谱名称"
-              required
-            />
+            <div class="name-input-group">
+              <input
+                v-model="form.name"
+                type="text"
+                class="form-control"
+                placeholder="请输入菜谱名称，如：红烧肉、番茄炒蛋"
+                required
+              />
+              <button
+                type="button"
+                class="btn btn-ai"
+                @click="generateRecipeByAI"
+                :disabled="aiGenerating || !form.name.trim() || isEdit"
+                v-if="!isEdit"
+              >
+                {{ aiGenerating ? '🤖 生成中...' : '🤖 AI智能填充' }}
+              </button>
+            </div>
+            <small class="form-hint">
+              输入菜谱名称后，点击"AI智能填充"按钮，AI将自动生成完整的菜谱信息
+            </small>
           </div>
 
           <div class="form-group">
@@ -219,13 +233,14 @@
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { recipeApi, fileApi } from '../api'
+import { recipeApi, fileApi, aiRecipeApi } from '../api'
 
 const route = useRoute()
 const router = useRouter()
 
 const loading = ref(false)
 const submitting = ref(false)
+const aiGenerating = ref(false)
 const coverInput = ref(null)
 
 const isEdit = computed(() => !!route.params.id)
@@ -314,6 +329,58 @@ const handleStepUpload = async (index, event) => {
 
 const removeStepImage = (index) => {
   form.steps[index].image = ''
+}
+
+const generateRecipeByAI = async () => {
+  if (!form.name.trim()) {
+    alert('请先输入菜谱名称')
+    return
+  }
+
+  if (confirm(`AI将根据菜谱名称"${form.name.trim()}"生成完整的菜谱信息，确定继续吗？`)) {
+    aiGenerating.value = true
+    try {
+      const result = await aiRecipeApi.generate(form.name.trim())
+      const generatedRecipe = result.data.data
+
+      if (generatedRecipe.cuisine && cuisineOptions.includes(generatedRecipe.cuisine)) {
+        form.cuisine = generatedRecipe.cuisine
+      }
+      if (generatedRecipe.difficulty && ['简单', '中等', '困难'].includes(generatedRecipe.difficulty)) {
+        form.difficulty = generatedRecipe.difficulty
+      }
+      if (generatedRecipe.cookingTime && generatedRecipe.cookingTime > 0) {
+        form.cookingTime = generatedRecipe.cookingTime
+      }
+      if (generatedRecipe.description) {
+        form.description = generatedRecipe.description
+      }
+      if (generatedRecipe.coverImage) {
+        form.coverImage = ''
+      }
+
+      if (generatedRecipe.ingredients && generatedRecipe.ingredients.length > 0) {
+        form.ingredients = generatedRecipe.ingredients.map(ing => ({
+          name: ing.name || '',
+          quantity: ing.quantity || ''
+        })).filter(ing => ing.name.trim())
+      }
+
+      if (generatedRecipe.steps && generatedRecipe.steps.length > 0) {
+        form.steps = generatedRecipe.steps.map((step, index) => ({
+          stepNumber: step.stepNumber || (index + 1),
+          description: step.description || '',
+          image: ''
+        })).filter(step => step.description.trim())
+      }
+
+      alert('🎉 AI菜谱生成成功！请检查并补充封面图片')
+    } catch (error) {
+      alert('AI生成失败: ' + error.message + '\n\n提示：请确保已在"AI配置"页面正确配置并激活了AI模型')
+    } finally {
+      aiGenerating.value = false
+    }
+  }
 }
 
 const fetchRecipe = async () => {
@@ -451,6 +518,44 @@ onMounted(() => {
   font-size: 1.3rem;
   color: #333;
   margin: 0;
+}
+
+.name-input-group {
+  display: flex;
+  gap: 10px;
+}
+
+.name-input-group .form-control {
+  flex: 1;
+}
+
+.btn-ai {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  white-space: nowrap;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-ai:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.btn-ai:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.form-hint {
+  display: block;
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: #6c757d;
 }
 
 .form-row {
@@ -620,6 +725,14 @@ onMounted(() => {
 @media (max-width: 768px) {
   .form-container {
     padding: 20px;
+  }
+
+  .name-input-group {
+    flex-direction: column;
+  }
+
+  .name-input-group .btn-ai {
+    width: 100%;
   }
 
   .form-row {
