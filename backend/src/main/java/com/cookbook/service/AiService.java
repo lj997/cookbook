@@ -7,12 +7,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.openai.OpenAiChatModel;
+import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.openai.api.OpenAiApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -88,16 +88,14 @@ public class AiService {
             baseUrl = baseUrl + "/";
         }
 
-        OpenAiApi openAiApi = OpenAiApi.builder()
-                .baseUrl(baseUrl)
-                .apiKey(apiKey)
+        OpenAiApi openAiApi = new OpenAiApi(baseUrl, apiKey);
+
+        OpenAiChatOptions options = OpenAiChatOptions.builder()
+                .withModel(model)
+                .withTemperature(0.7)
                 .build();
 
-        ChatModel chatModel = OpenAiChatModel.builder()
-                .openAiApi(openAiApi)
-                .model(model)
-                .temperature(0.7)
-                .build();
+        ChatModel chatModel = new OpenAiChatModel(openAiApi, options);
 
         return ChatClient.builder(chatModel).build();
     }
