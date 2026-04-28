@@ -87,7 +87,7 @@ public class FileController {
 
         if (successCount == 0) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ApiResponse.error("所有文件上传失败", result));
+                    .body(ApiResponse.success("所有文件上传失败", result));
         }
 
         return ResponseEntity.ok(ApiResponse.success("成功上传 " + successCount + " 个文件", result));
