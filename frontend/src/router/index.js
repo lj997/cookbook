@@ -4,6 +4,7 @@ import RecipeDetail from '../views/RecipeDetail.vue'
 import RecipeForm from '../views/RecipeForm.vue'
 import ShoppingList from '../views/ShoppingList.vue'
 import RandomRecipe from '../views/RandomRecipe.vue'
+import AiConfig from '../views/AiConfig.vue'
 
 const routes = [
   {
@@ -35,6 +36,11 @@ const routes = [
     path: '/random',
     name: 'RandomRecipe',
     component: RandomRecipe
+  },
+  {
+    path: '/ai-config',
+    name: 'AiConfig',
+    component: AiConfig
   }
 ]
 

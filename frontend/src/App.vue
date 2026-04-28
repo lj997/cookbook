@@ -16,6 +16,9 @@
           <router-link to="/random" class="nav-link" :class="{ active: $route.path === '/random' }">
             随机推荐
           </router-link>
+          <router-link to="/ai-config" class="nav-link" :class="{ active: $route.path === '/ai-config' }">
+            🤖 AI配置
+          </router-link>
           <router-link to="/create" class="nav-link create-btn">
             + 添加菜谱
           </router-link>
